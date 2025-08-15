@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "b7163f98-6ee8-430c-aab2-acc00a1f6b0e"
+      }
+    },
+    "android": {
+      "package": "com.malkan24.reactnative"
+    }
+  }
+}
