@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
 import axios from 'axios';
+import API_BASE_URL from '../config/api';
 
-const API_URL = 'http://192.168.18.65:3000/random-images'; 
+const API_URL = `${API_BASE_URL}/random-images`; 
 
 export default function RandomImageQuiz() {
   const [images, setImages] = useState([]);

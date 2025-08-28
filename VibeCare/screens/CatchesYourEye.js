@@ -12,9 +12,16 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
+// import API_BASE_URL from '../config/api';
+import { API_BASE_URL } from "../config/api";
 
-const API_URL = 'http://192.168.18.65:3000/random-images';
+
+const API_URL = `${API_BASE_URL}/random-images`;
 const { width } = Dimensions.get('window');
+
+console.log("API_BASE_URL =", API_BASE_URL);
+console.log("Full API_URL =", API_URL);
+
 
 const LoadingDots = () => {
   const dotAnimation = useRef(new Animated.Value(0)).current;
@@ -57,19 +64,29 @@ const CatchesYourEye = () => {
   const [loading, setLoading] = useState(true);
 
   const fetchImages = async () => {
-    try {
-      const res = await axios.get(API_URL);
-      if (res.data && Array.isArray(res.data.data)) {
-        setImages(res.data.data.slice(0, 5)); // only get 5 random images
-      } else {
-        setImages([]);
-      }
-    } catch (error) {
-      console.error("Error fetching images:", error.message);
-    } finally {
-      setLoading(false);
+
+  try {
+    const url = `${API_BASE_URL}/random-images`;
+
+    const res = await axios.get(url);
+
+    if (res.data && Array.isArray(res.data.data)) {
+      console.log("📷 Images array length =", res.data.data.length);
+      setImages(res.data.data.slice(0, 5));
+    } else {
+      setImages([]);
     }
-  };
+  } catch (error) {
+    if (error.response) {
+    } else if (error.request) {
+    } else {
+      console.error("🔴 Axios config error:", error.message);
+    }
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     fetchImages();
@@ -78,7 +95,7 @@ const CatchesYourEye = () => {
   const handleImageClick = async (img) => {
     console.log("Image ID being sent:", img._id);
     try {
-      const res = await axios.get(`http://192.168.18.65:3000/image-details/${img._id}`);
+      const res = await axios.get(`${API_BASE_URL}/image-details/${img._id}`);
       if (res.data && res.data.data) {
         navigation.navigate("ResultScreen", { image: res.data.data });
       } else {

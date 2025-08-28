@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_BASE_URL } from '../config/api';
 
 // ✅ Use your correct Google API Key
 const GEMINI_API_KEY = 'AIzaSyC27KUl5bvMUwVspsJFDOi0vOyqVzM4DMI';
@@ -37,7 +38,7 @@ const sendMessage = async () => {
   try {
     const prompt = `
       You are a licensed psychiatrist named Dodo. You help users deal with mental stress, anxiety, confusion, or daily life issues. Be empathetic, professional, and speak with kindness.
-      Now, answer the following as a psychiatrist:
+      Now, answer the following as a psychiatrist.Remember,your answer should be as limited as possible , maximum 50 words :
       "${userInput}"
     `;
 

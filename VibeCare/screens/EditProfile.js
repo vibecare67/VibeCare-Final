@@ -9,6 +9,7 @@ import {
   Modal,closeAlert
 } from "react-native";
 import axios from "axios";
+import { API_BASE_URL } from '../config/api';
 
 const EditProfileScreen = ({ route }) => {
   const userId = route?.params?.userId;
@@ -29,7 +30,7 @@ const EditProfileScreen = ({ route }) => {
       return;
     }
     axios
-      .get(`http://192.168.18.65:3000/user-profile?userId=${userId}`)
+      .get(`${API_BASE_URL}/user-profile?userId=${userId}`)
       .then((response) => setProfile(response.data))
       .catch((error) => console.error("Error fetching user data:", error));
   }, [userId]);
@@ -50,7 +51,7 @@ const closeAlert = () => {
 
   const handleSubmit = async () => {
     try {
-      await axios.put("http://192.168.18.65:3000/edit-profile", {
+      await axios.put(`${API_BASE_URL}/edit-profile`, {
         userId,
         ...profile,
       });

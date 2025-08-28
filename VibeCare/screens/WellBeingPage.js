@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView, Alert, Modal, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useRoute, useFocusEffect } from '@react-navigation/native';
+import {API_BASE_URL} from '../config/api';
 
 const WellBeingPage = ({ route }) => {
   const userId = route?.params?.userId || null;
@@ -38,7 +39,7 @@ const WellBeingPage = ({ route }) => {
 
   const fetchLatestDepressionResult = async () => {
     try {
-      const response = await fetch(`http://192.168.18.65:3000/get-latest-result?userId=${userId}`);
+      const response = await fetch(`${API_BASE_URL}/get-latest-result?userId=${userId}`);
       const data = await response.json();
       
       if (response.ok && data.status === "success") {
@@ -54,7 +55,7 @@ const WellBeingPage = ({ route }) => {
  
   const fetchLatestAnxietyResult = async () => {
   try {
-    const response = await fetch(`http://192.168.18.65:3000/get-latest-anxiety-result?userId=${userId}`);
+    const response = await fetch(`${API_BASE_URL}/get-latest-anxiety-result?userId=${userId}`);
     const data = await response.json();
     
     if (response.ok && data.status === "success") {
@@ -72,7 +73,7 @@ const WellBeingPage = ({ route }) => {
 };
 const fetchLatestStressResult = async () => {
   try {
-    const response = await fetch(`http://192.168.18.65:3000/stress-result/latest/${userId}`);
+    const response = await fetch(`${API_BASE_URL}/stress-result/latest/${userId}`);
     const data = await response.json();
     
     if (response.ok && data.status === "success") {

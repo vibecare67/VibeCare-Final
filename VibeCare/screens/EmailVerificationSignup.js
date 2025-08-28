@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal } from 'react-native';
+import { API_BASE_URL } from '../config/api';
 
 const EmailVerificationSignUp = ({ navigation, route }) => {
   const { Name, Username, Email, Password, otpSent } = route.params || {};
@@ -7,6 +8,7 @@ const EmailVerificationSignUp = ({ navigation, route }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertTitle, setAlertTitle] = useState('');
+
 
   const showAlert = (title, message) => {
     setAlertTitle(title);
@@ -17,7 +19,7 @@ const EmailVerificationSignUp = ({ navigation, route }) => {
   const verifyOtp = async () => {
     try {
       console.log('📤 Sending OTP verification request...');
-      const response = await fetch('http://192.168.18.65:3000/verify-otp', {
+      const response = await fetch(`${API_BASE_URL}/verify-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ Email, otp }),
@@ -32,7 +34,7 @@ const EmailVerificationSignUp = ({ navigation, route }) => {
 
         if (data.status === 'success') {
           console.log('✅ OTP verified, now registering user...');
-          const registerResponse = await fetch('http://192.168.18.65:3000/register', {
+          const registerResponse = await fetch(`${API_BASE_URL}/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ Name, Username, Email, Password }),

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import axios from 'axios';
 import { Ionicons } from '@expo/vector-icons'; // For the back button icon
+import {API_BASE_URL} from '../config/api'; 
 
 const HistoryScreen = ({ route, navigation }) => {
   const { userId } = route.params; // Access userId from navigation params
@@ -14,7 +15,7 @@ const HistoryScreen = ({ route, navigation }) => {
 
   const fetchEntries = async () => {
     try {
-      const response = await axios.get('http://192.168.18.65:3000/diary', {
+      const response = await axios.get(`${API_BASE_URL}/diary`, {
         params: { userId },
       });
       setEntries(response.data);
@@ -26,7 +27,7 @@ const HistoryScreen = ({ route, navigation }) => {
   // Function to delete a diary entry
   const handleDeleteEntry = async (entryId) => {
     try {
-      await axios.delete(`http://192.168.18.65:3000/diary/${entryId}`);
+      await axios.delete(`${API_BASE_URL}/diary/${entryId}`);
       fetchEntries(); // Refresh the list after deletion
     } catch (error) {
       console.error('Error deleting entry:', error);

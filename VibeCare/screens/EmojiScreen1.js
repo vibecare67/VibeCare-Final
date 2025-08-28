@@ -11,8 +11,9 @@ import {
   Animated,
 } from 'react-native';
 import axios from 'axios';
+import { API_BASE_URL } from '../config/api';
 
-const EMOJI_API = 'http://192.168.18.65:3000/api/emojis';
+const EMOJI_API = `${API_BASE_URL}/api/emojis`;
 const { width } = Dimensions.get('window');
 
 const EmojiScreen1 = ({ navigation }) => {

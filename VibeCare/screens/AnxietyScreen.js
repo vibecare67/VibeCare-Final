@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import { Video } from 'expo-av';
+import { API_BASE_URL } from '../config/api';
 import * as Animatable from 'react-native-animatable';
 
 const { width, height } = Dimensions.get('window');
@@ -71,7 +72,7 @@ const AnxietyScreen = ({ navigation, route }) => {
 
   const storeResultInDB = async (bai_score, anxiety_level) => {
     try {
-      const response = await fetch("http://192.168.18.65:3000/anxiety-result", {
+      const response = await fetch(`${API_BASE_URL}/anxiety-result`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -104,21 +105,21 @@ const AnxietyScreen = ({ navigation, route }) => {
       count += 1;
       setTimerCount(count);
 
-      if (count === 5) {
+      if (count === 60) {
         clearInterval(timerRef.current);
-        setPausedAt(5);
+        setPausedAt(50);
         setAlertMsg('Hurry up! 5 seconds left.');
         setShowAlert(true);
       } else if (count === 8) {
         clearInterval(timerRef.current);
-        setPausedAt(8);
+        setPausedAt(20);
         setAlertMsg('Only 2 seconds left!');
         setShowAlert(true);
       } else if (count >= 10) {
         clearInterval(timerRef.current);
         setTimeoutModal(true);
       }
-    }, 1000);
+    }, 6000);
   };
 
   useEffect(() => {
@@ -242,9 +243,9 @@ const AnxietyScreen = ({ navigation, route }) => {
           <Text style={styles.buttonText}>Next</Text>
         </TouchableOpacity>
 
-        <Text style={{ marginTop: 10, fontSize: 16, fontWeight: '600', color: '#444' }}>
+        {/* <Text style={{ marginTop: 10, fontSize: 16, fontWeight: '600', color: '#444' }}>
           Time: {timerCount}s
-        </Text>
+        </Text> */}
       </View>
     );
   };

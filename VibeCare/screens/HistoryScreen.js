@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
 // import { ChatContext } from '../ChatContext';
+import { API_BASE_URL } from '../config/api';
 
 const HistoryScreen = () => {
   const { messages } = useContext(ChatContext);

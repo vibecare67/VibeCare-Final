@@ -10,8 +10,9 @@ import {
   Animated,
 } from 'react-native';
 import axios from 'axios';
+import { API_BASE_URL } from '../config/api';
 
-const EMOJI_API = 'http://192.168.18.65:3000/api/emojis';
+const EMOJI_API = `${API_BASE_URL}/api/emojis`;
 const { width } = Dimensions.get('window');
 
 const COLOR_PALETTE = ['#FFD6E8', '#D6F5FF', '#D9FFD9', '#FFF4D6', '#E6D6FF', '#FFE6D6'];

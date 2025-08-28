@@ -35,7 +35,7 @@ const FeedbackListScreen = ({ navigation }) => {
 
   const fetchFeedbacks = async () => {
     try {
-      const response = await axios.get("http://192.168.18.65:3000/feedbacks");
+      const response = await axios.get("${API_BASE_URL}/feedbacks");
       setFeedbacks(response.data);
     } catch (error) {
       showAlert("Error", "Failed to fetch feedbacks", "error");
@@ -52,7 +52,7 @@ const FeedbackListScreen = ({ navigation }) => {
       "warning",
       async () => {
         try {
-          await axios.delete(`http://192.168.18.65:3000/feedbacks/${id}`);
+          await axios.delete(`${API_BASE_URL}/feedbacks/${id}`);
           setFeedbacks(feedbacks.filter((item) => item._id !== id));
           showAlert("Success", "Feedback deleted successfully", "success");
         } catch (error) {
@@ -65,7 +65,7 @@ const FeedbackListScreen = ({ navigation }) => {
 
   const handleRespond = async (id) => {
     try {
-      await axios.put(`http://192.168.18.65:3000/feedbacks/${id}/respond`);
+      await axios.put(`${API_BASE_URL}/feedbacks/${id}/respond`);
       showAlert("Success", "Feedback status updated to Responded", "success");
       fetchFeedbacks();
     } catch (error) {

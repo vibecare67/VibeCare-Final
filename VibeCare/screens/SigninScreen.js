@@ -10,6 +10,7 @@ import {
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { API_BASE_URL } from "../config/api";
 
 const SigninScreen = ({ navigation, route }) => {
   const userId = route?.params?.userId || null; 
@@ -52,36 +53,67 @@ const SigninScreen = ({ navigation, route }) => {
     setCustomAlertVisible(false);
   };
 
-  // Handle Form Submission
-  const handleSubmit = async () => {
-    if (!Email || !Password) {
-      showAlert("Missing Fields", "Please fill in all fields.");
-      return;
-    }
+// Handle Form Submission
+const handleSubmit = async () => {
+  console.log("=== DEBUG: Starting handleSubmit ===");
+  console.log("Email entered:", Email);
+  console.log("Password entered (length only):", Password.length);
 
-    const userData = { Email, Password };
+  if (!Email || !Password) {
+    console.log("DEBUG: Missing fields -> Email or Password is empty");
+    showAlert("Missing Fields", "Please fill in all fields.");
+    return;
+  }
 
-    try {
-      const res = await axios.post("http://192.168.18.65:3000/login-user", userData);
-      console.log("Login response:", res.data ); 
+  const userData = { Email, Password };
+  console.log("DEBUG: Sending request with data:", userData);
 
-      if (res.data.status === "ok" && res.data.userId) {
-        await AsyncStorage.setItem("userToken", res.data.data);
-        await AsyncStorage.setItem("userId", res.data.userId); // Save userId
-        if (res.data.username) {
-          await AsyncStorage.setItem("username", res.data.username);
-        }
-        showAlert("Success", "You have logged in successfully!");
-        navigation.navigate("ExploreScreen",{ userId: res.data.userId });
-        console.log("Login response:", res.data);
-      } else {
-        showAlert("Login Failed", res.data.data || "Unknown error occurred.");
+  try {
+    const serverUrl = `${API_BASE_URL}/login-user`;
+    console.log("DEBUG: Sending POST request to:", serverUrl);
+
+    const res = await axios.post(serverUrl, userData, {
+      timeout: 5000, // helpful to detect hanging requests
+    });
+
+    console.log("DEBUG: Full response received:", res);
+    console.log("DEBUG: Response data:", res.data);
+
+    if (res.data.status === "ok" && res.data.userId) {
+      console.log("DEBUG: Login successful -> Saving token and userId");
+
+      await AsyncStorage.setItem("userToken", res.data.data);
+      await AsyncStorage.setItem("userId", res.data.userId);
+      if (res.data.username) {
+        await AsyncStorage.setItem("username", res.data.username);
       }
-    } catch (error) {
-      showAlert("Error", "Recheck your credentials or your network connection.");
+
+      showAlert("Success", "You have logged in successfully!");
+      navigation.navigate("ExploreScreen", { userId: res.data.userId });
+    } else {
+      console.log("DEBUG: Login failed ->", res.data);
+      showAlert("Login Failed", res.data.data || "Unknown error occurred.");
     }
-    console.log(userToken)
-  };
+  } catch (error) {
+    console.log("=== DEBUG: ERROR CAUGHT ===");
+    if (error.response) {
+      // Server responded but with error code
+      console.log("DEBUG: Server error response:", error.response.data);
+      console.log("DEBUG: Status code:", error.response.status);
+      showAlert("Error", `Server responded with ${error.response.status}`);
+    } else if (error.request) {
+      // No response received
+      console.log("DEBUG: No response received from server.");
+      console.log("DEBUG: Request object:", error.request);
+      showAlert("Error", "No response from server. Check your network.");
+    } else {
+      // Something else went wrong
+      console.log("DEBUG: Axios setup error:", error.message);
+      showAlert("Error", error.message);
+    }
+  }
+};
+
   const saveUserInfo = async (username) => {
     try {
       await AsyncStorage.setItem('username', username);

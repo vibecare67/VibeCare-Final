@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { Video } from 'expo-av';
 import * as Animatable from 'react-native-animatable';
+import { API_BASE_URL } from "../config/api";
 
 const beckQuestions = [
   "I do not feel sad.",
@@ -117,7 +118,7 @@ const DepressionQuiz = ({ navigation ,route}) => {
 
 const storeResultInDB = async (bdi_score, depression_level) => {
   try {
-    const response = await fetch("http://192.168.18.65:3000/depression-result", {
+    const response = await fetch(`${API_BASE_URL}/depression-result`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -154,7 +155,7 @@ const resumeTimer = () => {
   startTimer(timer); // resume from remaining time
 };
 
-const startTimer = (startFrom = 10) => {
+const startTimer = (startFrom = 60) => {
   let time = startFrom;
   setTimer(time);
   clearInterval(intervalRef.current);
@@ -173,7 +174,7 @@ const startTimer = (startFrom = 10) => {
       stopTimer();
       setShowFinalTimeUpModal(true);
     }
-  }, 1000);
+  }, 6000);
 };
 
 useEffect(() => {
@@ -211,30 +212,50 @@ const closeAlert = () => {
   setLoading(true);
   setResult(null);  // clear old result
 
-  setTimeout(async () => {
+setTimeout(async () => {
+  try {
+    console.log("📌 Preparing answers:", answers);
+
+    const numericAnswers = answers.map((a) => parseInt(a));
+    console.log("✅ Numeric answers:", numericAnswers);
+
+    const url = "http://192.168.18.65:5000/predict_depression";
+    console.log("🌍 Sending request to:", url);
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ responses: numericAnswers }),
+    });
+
+    console.log("🔎 Response status:", response.status);
+
+    let data;
     try {
-      const numericAnswers = answers.map((a) => parseInt(a));
-      const response = await fetch("http://192.168.18.65:5000/predict_depression", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ responses: numericAnswers }),
-      });
-      const data = await response.json();
-      setLoading(false);
-
-      if (data.error) {
-        Alert.alert("Error", data.error);
-      } else {
-        setResult(data);  
-        await storeResultInDB(data.bdi_score, data.depression_level);
-      }
-    } catch (error) {
-      setLoading(false);
-      Alert.alert("⚠️ Connection Error", "Could not reach backend server.");
+      data = await response.json();
+      console.log("📥 Response JSON:", data);
+    } catch (jsonErr) {
+      console.error("❌ JSON parse error:", jsonErr);
+      throw new Error("Invalid JSON response from backend");
     }
-  }, 3000);
-};
 
+    setLoading(false);
+
+    if (data.error) {
+      console.error("⚠️ Backend returned error:", data.error);
+      Alert.alert("Error", data.error);
+    } else {
+      console.log("🎯 Prediction result:", data);
+      setResult(data);  
+      await storeResultInDB(data.bdi_score, data.depression_level);
+    }
+  } catch (error) {
+    console.error("🚨 Fetch/Network Error:", error);
+    setLoading(false);
+    Alert.alert("⚠️ Connection Error", `Could not reach backend server.\nDetails: ${error.message}`);
+  }
+}, 3000);
+  };
 
 
 
@@ -346,7 +367,7 @@ const closeAlert = () => {
 </View>
 
 
-            <Text style={styles.timerText}>⏱️ Time left: {timer}s</Text>
+            {/* <Text style={styles.timerText}>⏱️ Time left: {timer}s</Text> */}
 
             <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
               <Text style={styles.nextText}>{currentQuestion === 20 ? "Submit" : "Next"}</Text>
@@ -375,7 +396,7 @@ const closeAlert = () => {
             setShowFinalTimeUpModal(false);
             setCurrentQuestion(0);
             setAnswers(Array(21).fill(""));
-            startTimer(10);
+            startTimer(60);
           }}
           style={[styles.alertButton, { marginRight: 10 }]}
         >

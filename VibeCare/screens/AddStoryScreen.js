@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import axios from 'axios';
+import API_BASE_URL from '../config/api';
 
 const AddStoryScreen = ({ navigation, route }) => {
     const { userId } = route.params; // Access userId from navigation params
@@ -19,7 +20,7 @@ const AddStoryScreen = ({ navigation, route }) => {
   
         console.log('Payload:', payload); // Log the payload
   
-        const response = await axios.post('http://192.168.18.65:3000/success-stories', payload);
+        const response = await axios.post(`${API_BASE_URL}/success-stories`, payload);
         console.log('Story added:', response.data);
   
         // Navigate to SuccessStoriesScreen with userId

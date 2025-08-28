@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import axios from "axios";
+import API_BASE_URL from '../config/api';
 
 const RespondTicketScreen = ({ route, navigation }) => {
   const { feedbackId } = route.params;
@@ -23,7 +24,7 @@ const RespondTicketScreen = ({ route, navigation }) => {
 
   const fetchFeedback = async () => {
     try {
-      const res = await axios.get(`http://192.168.18.65:3000/feedbacks/${feedbackId}`);
+      const res = await axios.get(`${API_BASE_URL}/feedbacks/${feedbackId}`);
       setFeedback(res.data);
     } catch (error) {
       console.error("❌ Error fetching feedback:", error);
@@ -41,7 +42,7 @@ const RespondTicketScreen = ({ route, navigation }) => {
 
     setSubmitting(true);
     try {
-      await axios.put(`http://192.168.18.65:3000/feedbacks/${feedbackId}/response`, {
+      await axios.put(`${API_BASE_URL}/feedbacks/${feedbackId}/response`, {
         response,
       });
       Alert.alert("Success", "Response submitted successfully!");

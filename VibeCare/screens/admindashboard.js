@@ -45,7 +45,7 @@ const admindashboard = ({ navigation }) => {
 
       <TouchableOpacity
         style={[styles.button, styles.vcButton]}
-        onPress={() => navigation.navigate('VCAdminHistory')}
+        onPress={() => navigation.navigate('VCHistoryScreen')}
       >
         <Text style={styles.buttonText}>Virtual counselling History Management</Text>
       </TouchableOpacity>

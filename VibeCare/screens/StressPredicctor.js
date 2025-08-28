@@ -4,6 +4,7 @@ import { Card } from 'react-native-paper';
 import Slider from '@react-native-community/slider';
 import * as Animatable from 'react-native-animatable';
 import { Video } from 'expo-av';
+import {API_BASE_URL} from '../config/api';
 import { useNavigation } from '@react-navigation/native';
 
 const StressPredictor = ({navigation,route}) => {
@@ -138,19 +139,11 @@ const StressPredictor = ({navigation,route}) => {
 
   const handleTimeOut = () => {
     warningPhaseRef.current += 1;
-    if (warningPhaseRef.current === 1) {
+    if (warningPhaseRef.current === 10) {
       setShowWarning(true);
       showCustomAlert('⏰ Time Warning', 'You have 3 seconds left to answer!');
-      startCountdown(3);
-    } else if (warningPhaseRef.current === 2) {
-      showCustomAlert('⏰ Time Warning', 'You have 2 seconds left to answer!');
-      startCountdown(2);
-    } else if (warningPhaseRef.current === 3) {
-      showCustomAlert('⏰ Final Warning', 'You have 1 second left to answer!');
-      startCountdown(1);
-    } else {
-      showCustomAlert('⏰ Time Expired', 'You didn\'t answer in time. What would you like to do?', true);
-    }
+      startCountdown(60);
+    }    
   };
 
   const startCountdown = (seconds) => {
@@ -165,7 +158,7 @@ const StressPredictor = ({navigation,route}) => {
         }
         return prev - 1;
       });
-    }, 1000);
+    }, 10000);
   };
 
   const handleSliderChange = (name, value) => {
@@ -205,7 +198,7 @@ const StressPredictor = ({navigation,route}) => {
         payload[key] = parseFloat(value);
       }
 
-      const response = await fetch('http://192.168.18.65:5000/predict_stress', {
+      const response = await fetch(`http://192.168.18.65:5000/predict_stress`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -220,7 +213,7 @@ const StressPredictor = ({navigation,route}) => {
           setStressTextResult(data.stress_level);
           setResult(`Predicted Stress Level: ${data.stress_level}`);
 
-          const saveResponse = await fetch('http://192.168.18.65:3000/stress-result', {
+          const saveResponse = await fetch(`${API_BASE_URL}/stress-result`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const cors = require('cors');
+
 // const imagesRoutes=require('../backend/models/Images');
 
 // Application configuration
@@ -11,11 +12,23 @@ const app = express();
 app.use(express.json()); // JSON body parsing
 app.use(cors());
 
-// Constants
-const JWT_SECRET = 'your_jwt_secret'; 
-const MONGO_URL = "mongodb://localhost:27017/new_db";
-const EMAIL_USER = "itxmalkii2003@gmail.com";
-const EMAIL_PASS = "prac pdgh cllg qahv"; 
+const { 
+  API_BASE_URL, 
+  JWT_SECRET, 
+  MONGO_URL, 
+  EMAIL_USER, 
+  EMAIL_PASS 
+} = require('../../ReactNative/VibeCare/config/api');
+
+// Example usage in backend
+console.log('MongoDB URL:', MONGO_URL);
+console.log('JWT Secret:', JWT_SECRET);
+
+// Use in your Express app
+app.use((req, res, next) => {
+  console.log('API Base URL:', API_BASE_URL);
+  next();
+});
 
 // MongoDB Connection
 mongoose.connect(MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -163,13 +176,13 @@ app.post('/send-otp', async (req, res) => {
       const transporter = nodemailer.createTransport({
           service: 'gmail',
           auth: {
-              user: 'itxmalkii2003@gmail.com',
-              pass: 'prac pdgh cllg qahv',
+              user: 'vibecare67@gmail.com',
+              pass: 'dmuo xfwq mxhl nzpq',
           },
       });
 
       const mailOptions = {
-          from: 'itxmalkii2003@gmail.com',
+          from: 'vibecare67@gmail.com',
           to: Email,
           subject: 'Email Verification - VibeCare',
           text: `Your OTP is: ${otp}\n\nVerify your email to get your mental health well-being journey started.`,
@@ -218,13 +231,13 @@ app.post('/forgot-password', async (req, res) => {
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-              user: 'itxmalkii2003@gmail.com',
-             pass: 'prac pdgh cllg qahv',
+              user: 'vibecare67@gmail.com',
+             pass: 'dmuo xfwq mxhl nzpq',
            },
          });
      
          const mailOptions = {
-           from: 'itxmalkii2003@gmail.com',
+           from: 'vibecare67@gmail.com',
             to: Email,
             subject: 'Password Reset OTP',
             text: `Your OTP for password reset is: ${otp}`,
@@ -406,7 +419,7 @@ app.post("/predict", async (req, res) => {
         const { features } = req.body;
 
         // Send data to Flask API
-        const response = await axios.post("http://192.168.18.65:5000/predict", {
+        const response = await axios.post(`${API_BASE_URL.replace('3000', '5000')}/predict`,{
             features: features
         });
         
@@ -867,6 +880,38 @@ app.post('/verify-caretaker', async (req, res) => {
     res.status(500).json({ status: 'error', message: 'Server error' });
   }
 });
+// Add this to your backend routes
+app.get("/get-user-by-caretaker", async (req, res) => {
+    const { caretakerId } = req.query;
+
+    if (!caretakerId) {
+        return res.status(400).send({ status: "error", message: "caretakerId is required" });
+    }
+
+    try {
+        const caretaker = await Caretaker.findById(caretakerId);
+        if (!caretaker) {
+            return res.status(404).send({ status: "error", message: "Caretaker not found" });
+        }
+
+        const user = await User.findById(caretaker.userId);
+        if (!user) {
+            return res.status(404).send({ status: "error", message: "User not found" });
+        }
+
+        res.send({ 
+            status: "success", 
+            user: {
+                id: user._id,
+                name: user.Name,
+                username: user.Username
+            }
+        });
+    } catch (error) {
+        console.error("Error fetching user by caretaker:", error);
+        res.status(500).send({ status: "error", message: "Internal server error" });
+    }
+});
 
 const DepressionResultSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "Userinfo", required: true },
@@ -1163,6 +1208,150 @@ app.delete("/delete-chats", async (req, res) => {
     });
   }
 });
+
+app.get("/get-all-chats", async (req, res) => {
+  try {
+    const chats = await Chat.find()
+      .sort({ createdAt: -1 })
+      .limit(500);
+
+    res.send({
+      status: "success",
+      chats,
+    });
+  } catch (error) {
+    console.error("Error fetching all chats:", error);
+    res.status(500).send({
+      status: "error",
+      message: "Internal server error",
+    });
+  }
+});
+
+// GET /mental-health-summary/:userId
+app.get('/mental-health-summary/:userId', async (req, res) => {
+  try {
+    const [depression, anxiety, stress] = await Promise.all([
+      DepressionResult.findOne({ userId: req.params.userId }).sort({ createdAt: -1 }),
+      AnxietyResult.findOne({ userId: req.params.userId }).sort({ createdAt: -1 }),
+      StressResult.findOne({ userId: req.params.userId }).sort({ createdAt: -1 })
+    ]);
+
+    res.json({
+      status: 'success',
+      data: {
+        depression: depression ? depression.depression_level : 'No data',
+        anxiety: anxiety ? anxiety.anxiety_level : 'No data',
+        stress: stress ? stress.stress_level : 'No data',
+        // Include dates if needed
+        depressionDate: depression?.createdAt,
+        anxietyDate: anxiety?.createdAt,
+        stressDate: stress?.createdAt
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+// GET /mental-health-history/:userId
+app.get('/mental-health-history/:userId', async (req, res) => {
+  try {
+   
+    res.json({ status: 'success', data: [] });
+  } catch (error) {
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
+app.get("/get-all-users", async (req, res) => {
+    try {
+        const users = await User.find()
+            .select("-Password -otp -resetToken -resetTokenExpiration"); // exclude sensitive fields
+        res.json({ status: "success", data: users });
+    } catch (error) {
+        console.error("Error fetching all users:", error);
+        res.status(500).json({ status: "error", message: "Internal server error" });
+    }
+});
+
+const LoginHistorySchema = new mongoose.Schema({
+    userId: String,
+    loginTime: { type: Date, default: Date.now },
+    ipAddress: String,
+});
+app.post("/login-user", async (req, res) => {
+    const { Email, Password } = req.body;
+
+    try {
+        const oldUser = await User.findOne({ Email });
+        if (!oldUser) {
+            return res.status(404).send({ status: "error", message: "User does not exist" });
+        }
+
+        // Compare passwords using bcryptjs
+        const isPasswordValid = await bcrypt.compare(Password, oldUser.Password);
+        
+        if (isPasswordValid) {
+            const token = jwt.sign({ Email: oldUser.Email }, JWT_SECRET, { expiresIn: "1h" });
+
+            // Save login history
+            await new LoginHistory({
+                userId: oldUser._id,
+                ipAddress: req.ip
+            }).save();
+
+            return res.status(200).send({
+                status: "ok",
+                data: token,
+                userId: oldUser._id,
+            });
+        } else {
+            return res.status(400).send({ status: "error", message: "Invalid credentials" });
+        }
+    } catch (err) {
+        console.error('Login error:', err);
+        res.status(500).send({ status: "error", message: "Internal server error" });
+    }
+});
+
+app.get("/get-login-history/:userId", async (req, res) => {
+    try {
+        const history = await LoginHistory.find({ userId: req.params.userId }).sort({ loginTime: -1 });
+        res.json({ status: "success", data: history });
+    } catch (error) {
+        console.error("Error fetching login history:", error);
+        res.status(500).json({ status: "error", message: "Internal server error" });
+    }
+});
+
+const PasswordResetHistorySchema = new mongoose.Schema({
+    userId: String,
+    resetTime: { type: Date, default: Date.now },
+});
+
+const PasswordResetHistory = mongoose.model("PasswordResetHistory", PasswordResetHistorySchema);
+
+app.delete("/delete-user/:userId", async (req, res) => {
+    try {
+        await User.findByIdAndDelete(req.params.userId);
+        res.json({ status: "success", message: "User deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting user:", error);
+        res.status(500).json({ status: "error", message: "Internal server error" });
+    }
+});
+app.patch("/deactivate-user/:userId", async (req, res) => {
+    try {
+        await User.findByIdAndUpdate(req.params.userId, { status: "Deactivated" });
+        res.json({ status: "success", message: "User deactivated successfully" });
+    } catch (error) {
+        console.error("Error deactivating user:", error);
+        res.status(500).json({ status: "error", message: "Internal server error" });
+    }
+});
+
+
+
 
 // Start Server
 const PORT = 3000;

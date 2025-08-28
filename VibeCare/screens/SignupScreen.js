@@ -13,6 +13,7 @@ import { Checkbox } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {API_BASE_URL} from '../config/api';
 // import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 function SignupScreen({ navigation }) {
@@ -103,7 +104,7 @@ function SignupScreen({ navigation }) {
   
     try {
 
-        const otpResponse = await fetch("http://192.168.18.65:3000/send-otp", {
+       const otpResponse = await fetch(`${API_BASE_URL}/send-otp`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ userId, Email }),

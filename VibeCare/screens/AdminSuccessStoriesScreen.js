@@ -1,64 +1,85 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import axios from 'axios';
+import API_BASE_URL from '../config/api';
 
-const initialStories = [
-  {
-    id: '1',
-    name: 'Farhan M.',
-    age: 22,
-    location: 'Islamabad, Pakistan',
-    story: `As a university student living away from family, anxiety hit hard. I avoided socializing, my studies suffered, and I felt like I was drowning silently. VibeCare became my silent partner. Its mental well-being engine identified my rising anxiety levels early.\n\nThe daily mindfulness exercises and community support reminded me I wasn’t alone. Within 6 weeks, I had my first anxiety-free presentation. Now I share my experience openly. VibeCare gave me the tools — and the courage — to face life again.`,
-  },
-  {
-    id: '2',
-    name: 'Ayesha R.',
-    age: 25,
-    location: 'Lahore, Pakistan',
-    story: `Hi there, I’m here to listen. Please tell me what’s been on your mind lately—anything that’s been bothering you, making you feel low, or even small victories you’d like to share. There’s no judgment here, just a safe space to talk.\n\nYou can start by describing how your day has been or something that’s been weighing on you. I’m here to help, support, and guide you through this.`,
-  },
-];
+const API_URL = `${API_BASE_URL}`; // Replace with your actual API base URL
 
 const AdminSuccessStoriesScreen = () => {
-  const [stories, setStories] = useState(initialStories);
+  const [stories, setStories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const deleteStory = (id) => {
+  useEffect(() => {
+    fetchStories();
+  }, []);
+
+  const fetchStories = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${API_URL}/success-stories`);
+      setStories(response.data);
+    } catch (error) {
+      console.error('Error fetching stories:', error);
+      Alert.alert('Error', 'Failed to fetch success stories');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteStory = async (id) => {
     Alert.alert('Delete Story', 'Are you sure you want to delete this story?', [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Delete',
         style: 'destructive',
-        onPress: () => {
-          setStories((prev) => prev.filter((story) => story.id !== id));
+        onPress: async () => {
+          try {
+            await axios.delete(`${API_URL}/success-stories/${id}`);
+            fetchStories(); // Refresh the list after deletion
+          } catch (error) {
+            console.error('Error deleting story:', error);
+            Alert.alert('Error', 'Failed to delete the story');
+          }
         },
       },
     ]);
   };
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.header}>Success Stories Management</Text>
+        <Text style={styles.emptyText}>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.header}>Success Stories Management</Text>
 
       {stories.map((story) => (
-        <View key={story.id} style={styles.storyCard}>
+        <View key={story._id} style={styles.storyCard}>
           <View style={styles.headerRow}>
-            <Text style={styles.name}>{story.name}, {story.age}</Text>
-            <TouchableOpacity onPress={() => deleteStory(story.id)}>
+            <Text style={styles.name}>{story.title}</Text>
+            <TouchableOpacity onPress={() => deleteStory(story._id)}>
               <Ionicons name="trash-outline" size={24} color="#B00020" />
             </TouchableOpacity>
           </View>
-          <Text style={styles.location}>📍 {story.location}</Text>
+          <Text style={styles.location}>📍 {story.subtitle}</Text>
           <Text style={styles.storyText}>{story.story}</Text>
         </View>
       ))}
 
-      {stories.length === 0 && (
+      {stories.length === 0 && !loading && (
         <Text style={styles.emptyText}>No success stories to display.</Text>
       )}
     </ScrollView>
   );
 };
 
+// Keep all the styles exactly the same as in your original code
 const styles = StyleSheet.create({
   container: {
     flex: 1,

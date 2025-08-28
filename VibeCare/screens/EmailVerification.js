@@ -33,7 +33,7 @@ function EmailVerification({ navigation }) {
     }
   
     axios
-  .post("http://192.168.18.65:3000/forgot-password", { Email })
+  .post("${API_BASE_URL}/forgot-password", { Email })
   .then((res) => {
     const userId = res.data.userId; // get userId from response
 

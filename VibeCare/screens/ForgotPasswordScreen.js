@@ -8,6 +8,7 @@ import {
   Modal,
 } from "react-native";
 import axios from "axios";
+import { API_BASE_URL } from "../config/api";
 
 function ForgotPasswordScreen({ navigation }) {
   const [Email, setEmail] = useState("");
@@ -33,7 +34,7 @@ function ForgotPasswordScreen({ navigation }) {
     }
   
     axios
-      .post("http://192.168.18.65:3000/forgot-password", { Email })
+      .post(`${API_BASE_URL}/forgot-password`, { Email })
       .then((res) => {
         // Show success alert and navigate to VerifyOtpScreen
         showAlert("Success", res.data.message || "Reset link sent to your email.");

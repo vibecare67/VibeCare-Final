@@ -12,6 +12,7 @@ import {
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
+import {API_BASE_URL} from '../config/api';
 
 
 // Reusable Floating Label Input Component
@@ -87,7 +88,7 @@ const AddCaretakerScreen = ({ route }) => {
     }
 
     try {
-      const response = await axios.post('http://192.168.18.65:3000/add-caretaker', {
+      const response = await axios.post(`${API_BASE_URL}/add-caretaker`, {
         userId,
         caretakerName,
         caretakerOtp,
@@ -113,7 +114,7 @@ const AddCaretakerScreen = ({ route }) => {
   };
    const fetchCaretakers = async () => {
     try {
-      const response = await axios.get(`http://192.168.18.65:3000/get-caretakers?userId=${userId}`);
+      const response = await axios.get(`${API_BASE_URL}/get-caretakers?userId=${userId}`);
       if (response.data.status === 'success') {
         setCaretakerList(response.data.caretakers);
         setListModalVisible(true);

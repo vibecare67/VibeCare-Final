@@ -16,11 +16,12 @@ import {
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRoute } from '@react-navigation/native'; 
+import {API_BASE_URL} from '../config/api';
 
 
-// ✅ Use your correct Google API Key
-const GEMINI_API_KEY = 'AIzaSyC27KUl5bvMUwVspsJFDOi0vOyqVzM4DMI';
-const API_BASE_URL = 'http://192.168.18.65:3000'; // Your backend URL
+//Google API Key
+const GEMINI_API_KEY = 'AIzaSyDHrhraOvy-f5mOfEe0wiqSds37R_66WvI';
+const URL = `${API_BASE_URL}`; 
 
 const ChatBotScreen = () => {
   const [messages, setMessages] = useState([]);

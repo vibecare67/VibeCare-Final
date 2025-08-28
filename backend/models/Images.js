@@ -13,8 +13,8 @@ app.use(cors());
 // Constants
 const JWT_SECRET = 'your_jwt_secret'; 
 const MONGO_URL = "mongodb+srv://MalkanArooj:admin@cluster0.wsssc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-const EMAIL_USER = "itxmalkii2003@gmail.com";
-const EMAIL_PASS = "prac pdgh cllg qahv"; // email credentials
+const EMAIL_USER = "vibecare67@gmail.com";
+const EMAIL_PASS = "dmuo xfwq mxhl nzpq"; // email credentials
 
 
 

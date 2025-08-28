@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Modal, StyleSheet } from 'react-native';
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { API_BASE_URL } from '../config/api';
 
 const ResetPasswordScreen = ({ navigation, route }) => {
   const { Email } = route.params;
@@ -34,7 +35,7 @@ const ResetPasswordScreen = ({ navigation, route }) => {
 
     const passwordData = { Email, newPassword: NewPassword };
     try {
-      const response = await axios.post('http://192.168.18.65:3000/reset-password', passwordData);
+      const response = await axios.post(`${API_BASE_URL}/reset-password`, passwordData);
       if (response.data.status === 'success') {
         setModalMessage('Password reset successfully');
         setIsModalVisible(true);

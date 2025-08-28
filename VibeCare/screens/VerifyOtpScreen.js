@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import SignupScreen from './SignupScreen';
+import {API_BASE_URL} from '../config/api';
 
 const VerifyOtpScreen = ({ navigation, route }) => {
   const { Email } = route.params;
@@ -65,7 +66,7 @@ const VerifyOtpScreen = ({ navigation, route }) => {
    
   try {
     console.log('📤 Sending OTP verification request...');
-    const response = await fetch('http://192.168.18.65:3000/verifyOtp', {
+    const response = await fetch(`${API_BASE_URL}/verifyOtp`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',

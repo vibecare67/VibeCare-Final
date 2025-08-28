@@ -31,7 +31,7 @@ const FeedbackScreen = ({ navigation, route }) => {
   // Fetch feedback status from the backend
   const fetchFeedbackStatus = async () => {
     try {
-      const response = await axios.get(`http://192.168.18.65:3000/feedback-status/${userId}`);
+      const response = await axios.get(`${API_BASE_URL}/feedback-status/${userId}`);
       console.log("Response from backend:", response.data);
   
       if (response.data.feedback?.status) {
@@ -97,7 +97,7 @@ const FeedbackScreen = ({ navigation, route }) => {
     setTicketNumber(ticket);
 
     try {
-      await axios.post('http://192.168.18.65:3000/submit-feedback', {
+      await axios.post(`${API_BASE_URL}/submit-feedback`, {
         userId,
         rating,
         selectedImprovement: selectedImprovement

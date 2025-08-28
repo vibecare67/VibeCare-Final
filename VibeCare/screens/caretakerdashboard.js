@@ -1,8 +1,54 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import axios from 'axios'; // Make sure to install axios
+import API_BASE_URL from '../config/api';
 
 const caretakerdashboard = ({ route, navigation }) => {
-  const { userName } = route.params || { navigationame: 'Your User' };
+  const { caretakerId } = route.params || {};
+  const [userName, setUserName] = useState('Your User');
+  const [loading, setLoading] = useState(true);
+
+useEffect(() => {
+  const fetchUserData = async () => {
+    try {
+      const API_BASE_URL = `${API_BASE_URL}`;
+      const response = await axios.get(`${API_BASE_URL}/get-user-by-caretaker`, {
+        params: { caretakerId },
+        timeout: 10000 // 10 second timeout
+      });
+      
+      if (response.data.status === 'success') {
+        setUserName(response.data.user.name || response.data.user.username);
+      }
+    } catch (error) {
+      console.error('Error details:', {
+        message: error.message,
+        code: error.code,
+        config: error.config,
+        response: error.response
+      });
+      Alert.alert('Connection Error', 'Could not connect to the server. Please check your internet connection.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (caretakerId) {
+    fetchUserData();
+  } else {
+    setLoading(false);
+  }
+}, [caretakerId]);
+
+   
+
+  if (loading) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center' }]}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -10,30 +56,36 @@ const caretakerdashboard = ({ route, navigation }) => {
 
       <View style={styles.quoteBox}>
         <Text style={styles.quote}>
-          “Your presence is the most powerful support someone can receive.”
+          "Your presence is the most powerful support someone can receive."
         </Text>
       </View>
 
       <Text style={styles.description}>
-        As a caretaker, your role in supporting someone's emotional well-being is invaluable. Use the options below to explore their mental health status and past counselling conversations.
+        As a caretaker, your role in supporting someone's emotional well-being is invaluable. 
+        Use the options below to explore their mental health status and past counselling conversations.
       </Text>
 
       <Image
-        source={require('../assets/images/caretaker1.png')} // Replace with your local image path
+        source={require('../assets/images/caretaker1.png')}
         style={styles.image}
         resizeMode="contain"
       />
 
       <Text style={styles.caretakerInfo}>
-        You are a caretaker of Arooj<Text style={styles.highlight}>{userName}</Text>
+        You are a caretaker of <Text style={styles.highlight}>{userName}</Text>
       </Text>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('CaretakerMentalHealthSummaryScreen', { userName })}
-      >
-        <Text style={styles.buttonText}>📊 View Mental Health Summary</Text>
-      </TouchableOpacity>
+   <TouchableOpacity
+  style={styles.button}
+  onPress={() => {
+    navigation.navigate('CaretakerMentalHealthSummaryScreen', { 
+      userId: caretakerId,
+      userName: userName 
+    });
+  }}
+>
+  <Text style={styles.buttonText}>📊 View Mental Health Summary</Text>
+</TouchableOpacity>
 
       <TouchableOpacity
         style={styles.secondaryButton}
@@ -44,7 +96,6 @@ const caretakerdashboard = ({ route, navigation }) => {
     </ScrollView>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#FDE9E6',

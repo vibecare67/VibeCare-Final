@@ -9,6 +9,9 @@ import {
 } from "react-native";
 import axios from "axios";
 import { Ionicons } from '@expo/vector-icons';
+import {API_BASE_URL} from '../config/api';
+
+const API_URL = API_BASE_URL;
 
 const Diary = ({ route,navigation }) => {
   const { userId } = route.params; // Access userId from navigation params
@@ -20,7 +23,7 @@ const Diary = ({ route,navigation }) => {
   useEffect(() => {
     const fetchNotes = async () => {
       try {
-        const response = await axios.get('http://192.168.18.65:3000/diary', {
+        const response = await axios.get(`${API_URL}/diary`, {
           params: { userId },
         });
         setSavedNotes(response.data);
@@ -36,7 +39,7 @@ const Diary = ({ route,navigation }) => {
   const handleSaveNote = async () => {
     if (note.trim() !== "") {
       try {
-        const response = await axios.post('http://192.168.18.65:3000/diary', {
+        const response = await axios.post(`${API_URL}/diary`, {
           userId,
           note,
         });

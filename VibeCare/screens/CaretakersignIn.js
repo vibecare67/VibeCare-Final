@@ -15,7 +15,7 @@ const CaretakerSignIn = () => {
   }
 
   try {
-    const response = await axios.post('http://192.168.18.65:3000/verify-caretaker', {
+    const response = await axios.post(`${API_BASE_URL}/verify-caretaker`, {
       name,
       otp: code,
     });

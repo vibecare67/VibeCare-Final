@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
+import { API_BASE_URL } from '../config/api';
 
 const SuccessStoriesScreen = ({ navigation, route }) => {
   const { userId } = route.params;
@@ -19,7 +20,7 @@ const SuccessStoriesScreen = ({ navigation, route }) => {
   useEffect(() => {
     const fetchStories = async () => {
       try {
-        const response = await axios.get('http://192.168.18.65:3000/success-stories', {
+          const response = await axios.get(`${API_BASE_URL}/success-stories`, {
           params: { userId },
         });
         setStories(response.data);

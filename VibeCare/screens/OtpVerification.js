@@ -47,7 +47,7 @@ const OtpVerification = ({ navigation, route }) => {
 
     const otpData = { Email, otp: Otp };
     try {
-      const response = await axios.post('http://192.168.18.65:3000/verify-otp', otpData);
+      const response = await axios.post(`${API_BASE_URL}/verify-otp`, otpData);
       if (response.data.status === 'success') {
         navigation.navigate('SigninScreen', { userId });
       } else {

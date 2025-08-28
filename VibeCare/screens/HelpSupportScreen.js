@@ -18,7 +18,7 @@ const HelpSupportScreen = ({ navigation }) => {
 
   const faqs = [
     { question: 'How do I reset my password?', answer: 'Go to Account > Reset Password and follow the instructions.' },
-    { question: 'How do I contact support?', answer: 'You can reach us via email at itxmalkii2003@gmail.com or use the live chat option.' },
+    { question: 'How do I contact support?', answer: 'You can reach us via email at vibecare67@gmail.com or use the live chat option.' },
     { question: 'Is my data secure?', answer: 'Yes, we use end-to-end encryption to ensure your data remains private and secure.' },
   
   {
@@ -82,7 +82,7 @@ const HelpSupportScreen = ({ navigation }) => {
         <Divider style={styles.divider} />
 
         <Text style={styles.subHeader}>Need More Help?</Text>
-        <Button mode="contained" style={styles.emailButton} onPress={() => Linking.openURL('mailto:itxmalkii2003@gmail.com')}>
+        <Button mode="contained" style={styles.emailButton} onPress={() => Linking.openURL('mailto:vibecare67@gmail.com')}>
           Email Support
         </Button>
      

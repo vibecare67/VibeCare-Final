@@ -8,6 +8,7 @@ import {
   Modal,
 } from 'react-native';
 import { useUserPreferences } from '../UserPreferencesContext';
+import { API_BASE_URL } from '../config/api';
 
 const LivingSituationPage = ({ navigation, route }) => {
   const { preferences } = useUserPreferences();
@@ -25,7 +26,7 @@ const LivingSituationPage = ({ navigation, route }) => {
     const fullPreferences = { ...preferences, livingSituation, userId };
 
     try {
-      const response = await fetch("http://192.168.18.65:3000/save-preferences", {
+      const response = await fetch(`${API_BASE_URL}/save-preferences`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(fullPreferences),

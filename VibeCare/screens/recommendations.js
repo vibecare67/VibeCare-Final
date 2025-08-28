@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert, Image, ActivityIndicator, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import { useRoute } from '@react-navigation/native';
+import { API_BASE_URL } from '../config/api';
 
 // Helper functions for numeric conversions
 const getDepressionLevelNumber = (score) => {
@@ -265,16 +266,16 @@ const Recommendations = ({ route }) => {
       try {
         setLoadingData(true);
         
-        const preferencesResponse = await fetch(`http://192.168.18.65:3000/get-user-preferences?userId=${userId}`);
+        const preferencesResponse = await fetch(`${API_BASE_URL}/get-user-preferences?userId=${userId}`);
         const preferencesResult = await preferencesResponse.json();
         
-        const depressionResponse = await fetch(`http://192.168.18.65:3000/get-latest-result?userId=${userId}`);
+        const depressionResponse = await fetch(`${API_BASE_URL}/get-latest-result?userId=${userId}`);
         const depressionResult = await depressionResponse.json();
         
-        const anxietyResponse = await fetch(`http://192.168.18.65:3000/get-latest-anxiety-result?userId=${userId}`);
+        const anxietyResponse = await fetch(`${API_BASE_URL}/get-latest-anxiety-result?userId=${userId}`);
         const anxietyResult = await anxietyResponse.json();
         
-        const stressResponse = await fetch(`http://192.168.18.65:3000/stress-result/latest/${userId}`);
+        const stressResponse = await fetch(`${API_BASE_URL}/stress-result/latest/${userId}`);
         const stressResult = await stressResponse.json();
 
         // Text version for display
