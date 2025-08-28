@@ -8,19 +8,19 @@
       "developmentClient": true,
       "distribution": "internal",
       "android": {
-        "java": "17"
+        "image": "latest"
       }
     },
     "preview": {
       "distribution": "internal",
       "android": {
-        "java": "17"
+        "image": "latest"
       }
     },
     "production": {
       "autoIncrement": true,
       "android": {
-        "java": "17"
+        "image": "latest"
       }
     }
   },
