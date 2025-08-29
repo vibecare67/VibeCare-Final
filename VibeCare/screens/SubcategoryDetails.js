@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,7 @@ import {
   Dimensions,
   TouchableOpacity,
 } from 'react-native';
-import CardFlip from 'react-native-card-flip';
+import FlipCard from 'react-native-flip-card';
 
 const screenWidth = Dimensions.get('window').width;
 const pastelColors = [
@@ -21,7 +21,6 @@ const pastelColors = [
 ];
 
 const getBorderColor = (color) => {
-  
   const shade = 30;
   return color
     .replace(/^#/, '')
@@ -32,24 +31,33 @@ const getBorderColor = (color) => {
 
 const SubcategoryDetails = ({ route }) => {
   const { emojiData } = route.params;
-  const flipRefs = useRef([]);
-  const friendRefs = useRef([]);
 
   const sections = [
-  { title: ' Can You Guess What I’m Saying?', content: emojiData.expression },
-  { title: ' Here’s What I Think About You', content: emojiData['what i say about you'] },
-  { title: ' Feel My Vibe? This is What I Mean', content: emojiData['what i mean emotionally'] },
-  { title: ' My Worldwide Adventures', content: emojiData['how i travel around the world'] },
-  { title: ' The Perfect Time to Use Me', content: emojiData['use me when'] },
-  { title: ' Ready for a Fun Little Challenge?', content: emojiData.challenge },
-  { title: ' Did You Know This About Me?', content: emojiData.fun_fact },
+    { title: ' Can You Guess What I’m Saying?', content: emojiData.expression },
+    { title: ' Here’s What I Think About You', content: emojiData['what i say about you'] },
+    { title: ' Feel My Vibe? This is What I Mean', content: emojiData['what i mean emotionally'] },
+    { title: ' My Worldwide Adventures', content: emojiData['how i travel around the world'] },
+    { title: ' The Perfect Time to Use Me', content: emojiData['use me when'] },
+    { title: ' Ready for a Fun Little Challenge?', content: emojiData.challenge },
+    { title: ' Did You Know This About Me?', content: emojiData.fun_fact },
   ];
+
+  // State for section flips
+  const [flippedSections, setFlippedSections] = useState(
+    Array(sections.length).fill(false)
+  );
+
+  // State for friend flips
+  const [flippedFriends, setFlippedFriends] = useState(
+    Array(emojiData['my emoji friends'].length).fill(false)
+  );
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.emoji}>{emojiData.emoji}</Text>
       <Text style={styles.name}>{emojiData.name}</Text>
 
+      {/* Sections */}
       {sections.map((section, index) => {
         if (!section.content) return null;
 
@@ -57,100 +65,126 @@ const SubcategoryDetails = ({ route }) => {
         const borderColor = getBorderColor(bgColor);
 
         return (
-          <CardFlip
+          <FlipCard
             key={index}
             style={styles.cardFlip}
-            ref={(el) => (flipRefs.current[index] = el)}
+            flip={flippedSections[index]}
+            flipHorizontal={true}
+            flipVertical={false}
           >
             <TouchableOpacity
               style={[styles.card, { backgroundColor: bgColor, borderColor }]}
-              onPress={() => flipRefs.current[index].flip()}
+              onPress={() => {
+                const newFlips = [...flippedSections];
+                newFlips[index] = !newFlips[index];
+                setFlippedSections(newFlips);
+              }}
             >
               <Text style={styles.cardTitle}>{section.title}</Text>
             </TouchableOpacity>
+
             <TouchableOpacity
               style={[styles.card, { backgroundColor: bgColor, borderColor }]}
-              onPress={() => flipRefs.current[index].flip()}
+              onPress={() => {
+                const newFlips = [...flippedSections];
+                newFlips[index] = !newFlips[index];
+                setFlippedSections(newFlips);
+              }}
             >
               <Text style={styles.cardContent}>{section.content}</Text>
             </TouchableOpacity>
-          </CardFlip>
+          </FlipCard>
         );
       })}
 
-    {emojiData['my emoji friends'].map((friend, index) => {
-  const bgColor = pastelColors[(index + 2) % pastelColors.length];
-  const borderColor = getBorderColor(bgColor);
+      {/* Emoji Friends */}
+      {emojiData['my emoji friends'].map((friend, index) => {
+        const bgColor = pastelColors[(index + 2) % pastelColors.length];
+        const borderColor = getBorderColor(bgColor);
 
-  const isLastThree = index >= emojiData['my emoji friends'].length - 3;
+        const isLastThree = index >= emojiData['my emoji friends'].length - 3;
 
-  const card = (
-    <CardFlip
-      key={index}
-      style={[styles.cardFlipFriend, isLastThree && styles.lastRowCard]}
-      ref={(el) => (friendRefs.current[index] = el)}
-    >
-      <TouchableOpacity
-        style={[styles.card, { backgroundColor: bgColor, borderColor }]}
-        onPress={() => friendRefs.current[index].flip()}
-      >
-        <Text style={styles.FriendcardTitle}>{friend.emoji}</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={[styles.card, { backgroundColor: bgColor, borderColor }]}
-        onPress={() => friendRefs.current[index].flip()}
-      >
-        <Text style={styles.cardContent}>{friend.description}</Text>
-      </TouchableOpacity>
-    </CardFlip>
-  );
+        const card = (
+          <FlipCard
+            key={index}
+            style={[styles.cardFlipFriend, isLastThree && styles.lastRowCard]}
+            flip={flippedFriends[index]}
+            flipHorizontal={true}
+            flipVertical={false}
+          >
+            <TouchableOpacity
+              style={[styles.card, { backgroundColor: bgColor, borderColor }]}
+              onPress={() => {
+                const newFlips = [...flippedFriends];
+                newFlips[index] = !newFlips[index];
+                setFlippedFriends(newFlips);
+              }}
+            >
+              <Text style={styles.FriendcardTitle}>{friend.emoji}</Text>
+            </TouchableOpacity>
 
-  return isLastThree ? null : card;
-})}
-<TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.card, { backgroundColor: bgColor, borderColor }]}
+              onPress={() => {
+                const newFlips = [...flippedFriends];
+                newFlips[index] = !newFlips[index];
+                setFlippedFriends(newFlips);
+              }}
+            >
+              <Text style={styles.cardContent}>{friend.description}</Text>
+            </TouchableOpacity>
+          </FlipCard>
+        );
+
+        return isLastThree ? null : card;
+      })}
+
+      <TouchableOpacity>
         <Text style={styles.sectionTitle}>My emoji friends</Text>
       </TouchableOpacity>
 
-<View style={styles.rowContainer}>
-  {emojiData['my emoji friends']
-    .slice(-3)
-    .map((friend, index) => {
-      const bgColor = pastelColors[(index + 5) % pastelColors.length];
-      const borderColor = getBorderColor(bgColor);
+      <View style={styles.rowContainer}>
+        {emojiData['my emoji friends']
+          .slice(-3)
+          .map((friend, index) => {
+            const bgColor = pastelColors[(index + 5) % pastelColors.length];
+            const borderColor = getBorderColor(bgColor);
 
-      return (
-        <CardFlip
-          key={`last-${index}`}
-          style={[styles.cardFlipFriend, styles.lastRowCard]}
-          ref={(el) =>
-            (friendRefs.current[emojiData['my emoji friends'].length - 3 + index] = el)
-          }
-        >
-          <TouchableOpacity
-            style={[styles.card, { backgroundColor: bgColor, borderColor }]}
-            onPress={() =>
-              friendRefs.current[
-                emojiData['my emoji friends'].length - 3 + index
-              ].flip()
-            }
-          >
-            <Text style={styles.FriendcardTitle}>{friend.emoji}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.card, { backgroundColor: bgColor, borderColor }]}
-            onPress={() =>
-              friendRefs.current[
-                emojiData['my emoji friends'].length - 3 + index
-              ].flip()
-            }
-          >
-            <Text style={styles.cardContent}>{friend.description}</Text>
-          </TouchableOpacity>
-        </CardFlip>
-      );
-    })}
-</View>
+            const realIndex = emojiData['my emoji friends'].length - 3 + index;
 
+            return (
+              <FlipCard
+                key={`last-${index}`}
+                style={[styles.cardFlipFriend, styles.lastRowCard]}
+                flip={flippedFriends[realIndex]}
+                flipHorizontal={true}
+                flipVertical={false}
+              >
+                <TouchableOpacity
+                  style={[styles.card, { backgroundColor: bgColor, borderColor }]}
+                  onPress={() => {
+                    const newFlips = [...flippedFriends];
+                    newFlips[realIndex] = !newFlips[realIndex];
+                    setFlippedFriends(newFlips);
+                  }}
+                >
+                  <Text style={styles.FriendcardTitle}>{friend.emoji}</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[styles.card, { backgroundColor: bgColor, borderColor }]}
+                  onPress={() => {
+                    const newFlips = [...flippedFriends];
+                    newFlips[realIndex] = !newFlips[realIndex];
+                    setFlippedFriends(newFlips);
+                  }}
+                >
+                  <Text style={styles.cardContent}>{friend.description}</Text>
+                </TouchableOpacity>
+              </FlipCard>
+            );
+          })}
+      </View>
     </ScrollView>
   );
 };
@@ -170,6 +204,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowOffset: { width: 0, height: 3 },
     shadowRadius: 5,
+    minWidth: 100,
   },
   name: {
     fontSize: 24,
@@ -184,7 +219,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   cardFlipFriend: {
-    width: screenWidth * 0.65,
+    width: screenWidth * 0.15,
     height: 100,
     marginBottom: 16,
   },
@@ -205,18 +240,18 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 18,
-  fontWeight: 3000,
-  color: '#333',
-  textAlign: 'center',
-  fontStyle: 'italic',
-  lineHeight: 28
+    fontWeight: '300',
+    color: '#333',
+    textAlign: 'center',
+    fontStyle: 'italic',
+    lineHeight: 28,
   },
   FriendcardTitle: {
     fontSize: 26,
-  fontWeight: 3000,
-  color: '#333',
-  textAlign: 'center',
-  lineHeight: 28
+    fontWeight: '300',
+    color: '#333',
+    textAlign: 'center',
+    lineHeight: 28,
   },
   cardContent: {
     fontSize: 14,
@@ -232,18 +267,17 @@ const styles = StyleSheet.create({
     color: '#6A1B9A',
   },
   rowContainer: {
-  flexDirection: 'row',
-  flexWrap: 'wrap',
-  justifyContent: 'space-between',
-  width: '100%',
-  marginTop: 10,
-},
-lastRowCard: {
-  width: '30%',
-  height: 100,
-  marginBottom: 16,
-},
-
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 10,
+  },
+  lastRowCard: {
+    width: '90%',
+    height: 100,
+    marginBottom: 16,
+  },
 });
 
 export default SubcategoryDetails;

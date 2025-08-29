@@ -12,7 +12,7 @@ app.use(cors());
 
 // Constants
 const JWT_SECRET = 'your_jwt_secret'; 
-const MONGO_URL = "mongodb+srv://MalkanArooj:admin@cluster0.wsssc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const MONGO_URL = "mongodb+srv://VibeCare:VibeCare67@cluster0.1rleb9o.mongodb.net/new_db?retryWrites=true&w=majority";
 const EMAIL_USER = "vibecare67@gmail.com";
 const EMAIL_PASS = "dmuo xfwq mxhl nzpq"; // email credentials
 

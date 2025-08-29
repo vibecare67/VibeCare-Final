@@ -10,11 +10,11 @@ const development = {
 };
 
 const production = {
-  API_BASE_URL: 'https://your-production-domain.com',
+  API_BASE_URL: 'http://192.168.18.65:3000',
   JWT_SECRET: process.env.JWT_SECRET || 'your_production_jwt_secret',
-  MONGO_URL: process.env.MONGO_URL || 'mongodb+srv://production-connection-string',
-  EMAIL_USER: process.env.EMAIL_USER || 'production-email@gmail.com',
-  EMAIL_PASS: process.env.EMAIL_PASS || 'production-email-password'
+  MONGO_URL: 'mongodb+srv://VibeCare:VibeCare67@cluster0.1rleb9o.mongodb.net/new_db?retryWrites=true&w=majority',
+  EMAIL_USER: 'vibecare67@gmail.com',
+  EMAIL_PASS: 'dmuo xfwq mxhl nzpq'
 };
 
 // Determine environment (for React Native frontend)

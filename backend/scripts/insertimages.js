@@ -416,7 +416,7 @@ const images = [
 
 const start = async () => {
   try {
-    await mongoose.connect("mongodb+srv://MalkanArooj:admin@cluster0.wsssc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", {
+    await mongoose.connect("mongodb+srv://VibeCare:VibeCare67@cluster0.1rleb9o.mongodb.net/new_db?retryWrites=true&w=majority", {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });

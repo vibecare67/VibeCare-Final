@@ -22,8 +22,7 @@ def load_suggestion_models():
     
     try:
         # Load the pre-trained model and label encoder
-        suggestion_model = joblib.load(r'E:\ReactNative\backend\model_suggest.joblib')
-        label_encoder = joblib.load(r'E:\ReactNative\backend\label_encoder_suggest.joblib')
+        label_encoder = joblib.load(r'E:\REACTNATIVE-FINAL\ReactNative\backend\label_encoder_suggest.joblib')
         print("Suggestion model and label encoder loaded successfully")
     except Exception as e:
         print(f"Error loading suggestion model files: {str(e)}")
@@ -36,26 +35,26 @@ stress_scaler = None
 def load_stress_model():
     global stress_model, stress_scaler
     try:
-        stress_model = tf_load_model(r'E:\ReactNative\backend\stress_model.h5')
-        stress_scaler = joblib.load(r'E:\ReactNative\backend\scaler3.pkl')
+        stress_model = tf_load_model(r'E:\REACTNATIVE-FINAL\ReactNative\backend\stress_model.h5')
+        stress_scaler = joblib.load(r'E:\REACTNATIVE-FINAL\ReactNative\backend\scaler3.pkl')
         print("✅ Stress model and scaler loaded.")
     except Exception as e:
         print(f"❌ Error loading stress model: {e}")
 
-# ---------------------- SUGGESTION MODULE ----------------------
+
 suggestion_model_v2 = None
 suggestion_label_encoder = None
 
 def load_suggestion_model_v2():
     global suggestion_model_v2, suggestion_label_encoder
     try:
-        suggestion_model_v2 = joblib.load(r"E:\ReactNative\backend\suggestion_model.pkl")
+        suggestion_model_v2 = joblib.load(r"E:\REACTNATIVE-FINAL\ReactNative\backend\suggestion_model.pkl")
         print("✅ Suggestion model loaded.")
     except Exception as e:
         print("❌ Error loading suggestion model:", e)
 
     try:
-        suggestion_label_encoder = joblib.load(r"E:\ReactNative\backend\depression_scaler.pkl")
+        suggestion_label_encoder = joblib.load(r"E:\REACTNATIVE-FINAL\ReactNative\backend\depression_scaler.pkl")
         print("✅ Suggestion label encoder loaded.")
     except Exception as e:
         print("❌ Error loading suggestion label encoder:", e)
@@ -66,7 +65,7 @@ depression_model = None
 def load_depression_model():
     global depression_model
     try:
-        depression_model = tf_load_model(r"E:\ReactNative\backend\depression_model.h5", compile=False)
+        depression_model = tf_load_model(r"E:\REACTNATIVE-FINAL\ReactNative\backend\depression_model.h5", compile=False)
         depression_model.compile(optimizer='adam', loss=MeanSquaredError(), metrics=['mse'])
         print("✅ Depression model loaded.")
     except Exception as e:
@@ -78,7 +77,7 @@ anxiety_model = None
 def load_anxiety_model():
     global anxiety_model
     try:
-        anxiety_model = joblib.load(r"E:\ReactNative\backend\anxiety_model.pkl")
+        anxiety_model = joblib.load(r"E:\REACTNATIVE-FINAL\ReactNative\backend\anxiety_model.pkl")
         print("✅ Anxiety model loaded.")
     except Exception as e:
         print("❌ Error loading anxiety model:", e)

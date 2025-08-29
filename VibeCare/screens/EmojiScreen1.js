@@ -164,6 +164,9 @@ const styles = StyleSheet.create({
   },
   emoji: {
     fontSize: 64,
+    minWidth: 80,
+    textAlign: 'center',
+    shadowColor: '#999',
   },
   emojiLabel: {
     fontSize: 16,

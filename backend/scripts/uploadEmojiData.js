@@ -7,7 +7,7 @@ const emojiSchema = new mongoose.Schema({}, { strict: false });
 const Emoji = mongoose.model('Emoji', emojiSchema, 'emojis');
 
 // Connect to MongoDB
-mongoose.connect('mongodb+srv://MalkanArooj:admin@cluster0.wsssc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0') // Change to your DB
+mongoose.connect('mongodb+srv://VibeCare:VibeCare67@cluster0.1rleb9o.mongodb.net/new_db?retryWrites=true&w=majority') // Change to your DB
   .then(async () => {
     console.log('✅ Connected to MongoDB');
 

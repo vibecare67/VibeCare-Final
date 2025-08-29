@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 10,
     borderRadius: 12,
-    width: 100,
+    minwidth: 60,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowOffset: { width: 2, height: 2 },
@@ -121,6 +121,10 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   emoji: {
+    minWidth: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
     fontSize: 36,
   },
   emojiName: {
