@@ -18,7 +18,7 @@ const {
   MONGO_URL, 
   EMAIL_USER, 
   EMAIL_PASS 
-} = require('../../ReactNative/VibeCare/config/api');
+} = require('./config/config');
 
 // Example usage in backend
 console.log('MongoDB URL:', MONGO_URL);
