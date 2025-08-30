@@ -27,6 +27,12 @@
     },
     "plugins": [
       "expo-asset"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "93f07a0d-04ed-49c2-b7b0-3a0a74264bd2"
+      }
+    },
+    "owner": "vibecare"
   }
 }
