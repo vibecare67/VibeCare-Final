@@ -54,8 +54,9 @@ const User = mongoose.model('Userinfo', UserDetailSchema);
 
 // Default Route
 app.get("/", (req, res) => {
-    res.send({ status: "Started" });
+  res.json({ status: "API running", db: mongoose.connection.readyState });
 });
+
 
 // User Registration
 app.post("/register", async (req, res) => {
