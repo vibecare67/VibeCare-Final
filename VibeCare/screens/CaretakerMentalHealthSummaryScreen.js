@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
-
-const API_BASE_URL = `${API_BASE_URL}`;
+import { API_BASE_URL } from '../config/api';
 
 const CaretakerMentalHealthSummaryScreen = ({ route }) => {
   const { userId, userName } = route.params;

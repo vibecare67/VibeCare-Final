@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import axios from "axios";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { API_BASE_URL } from '../config/api';
 
 const FeedbackListScreen = ({ navigation }) => {
   const [feedbacks, setFeedbacks] = useState([]);
@@ -23,8 +24,13 @@ const FeedbackListScreen = ({ navigation }) => {
   });
 
   useEffect(() => {
-    fetchFeedbacks();
-  }, []);
+    const unsubscribe = navigation.addListener('focus', () => {
+      // Screen was focused, refresh data
+      fetchFeedbacks();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   const showAlert = (title, message, type = "info", onConfirm = () => {}) => {
     setAlertConfig({ title, message, type, onConfirm });
@@ -35,7 +41,7 @@ const FeedbackListScreen = ({ navigation }) => {
 
   const fetchFeedbacks = async () => {
     try {
-      const response = await axios.get("${API_BASE_URL}/feedbacks");
+      const response = await axios.get(`${API_BASE_URL}/feedbacks`);
       setFeedbacks(response.data);
     } catch (error) {
       showAlert("Error", "Failed to fetch feedbacks", "error");
@@ -65,9 +71,15 @@ const FeedbackListScreen = ({ navigation }) => {
 
   const handleRespond = async (id) => {
     try {
-      await axios.put(`${API_BASE_URL}/feedbacks/${id}/respond`);
+      // Make API call to update response status
+      const response = await axios.put(`${API_BASE_URL}/feedbacks/${id}/respond`);
+      
+      // Update the local state with the responded status from the server
+      setFeedbacks(feedbacks.map(item => 
+        item._id === id ? {...item, responded: true} : item
+      ));
+      
       showAlert("Success", "Feedback status updated to Responded", "success");
-      fetchFeedbacks();
     } catch (error) {
       showAlert("Error", "Failed to update feedback status", "error");
       console.error("❌ Error updating feedback status:", error);
@@ -169,10 +181,16 @@ const FeedbackListScreen = ({ navigation }) => {
               <Text style={styles.date}>📅 {new Date(item.createdAt).toLocaleString()}</Text>
               
               <TouchableOpacity 
-                style={styles.respondButton} 
+                style={[
+                  styles.respondButton, 
+                  item.responded && styles.respondedButton
+                ]} 
                 onPress={() => handleRespond(item._id)}
+                disabled={item.responded}
               >
-                <Text style={styles.buttonText}>Respond to Ticket</Text>
+                <Text style={styles.buttonText}>
+                  {item.responded ? "Responded" : "Respond to Ticket"}
+                </Text>
               </TouchableOpacity>
             </View>
           )}
@@ -256,6 +274,9 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     alignItems: "center",
+  },
+  respondedButton: {
+    backgroundColor: "#6c757d", // Gray color for responded state
   },
   buttonText: {
     color: "#FFF",

@@ -77,7 +77,7 @@ const getStressLevelText = (score) => {
   if (score <= 18) return "Mild";
   if (score <= 25) return "Moderate";
   if (score <= 34) return "Severe";
-  return "Not available";
+  return `${score}`;
 };
 
 // Model prediction logic

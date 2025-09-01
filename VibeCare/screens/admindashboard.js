@@ -1,14 +1,30 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, BackHandler } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 const admindashboard = ({ navigation }) => {
+  // Handle back button press
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        navigation.navigate('WelcomeScreen'); // Replace with your actual welcome screen name
+        return true; // Prevent default behavior
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => 
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, [navigation])
+  );
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.heading}>Admin Dashboard</Text>
 
       <View style={styles.quoteBox}>
         <Text style={styles.quote}>
-          “Leadership is about making others better as a result of your presence.”
+          "Leadership is about making others better as a result of your presence."
         </Text>
       </View>
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Alert } from 'react-native';
-import API_BASE_URL from '../config/api';
+import {API_BASE_URL} from '../config/api';
 
 const VCHistoryScreen = () => {
   const [sessions, setSessions] = useState([]);
@@ -9,7 +9,7 @@ const VCHistoryScreen = () => {
   useEffect(() => {
     const fetchChats = async () => {
       try {
-        const response = await fetch("${API_BASE_URL}/get-all-chats"); 
+        const response = await fetch(`${API_BASE_URL}/get-all-chats`); 
         const data = await response.json();
 
         if (data.status === "success") {

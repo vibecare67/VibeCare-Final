@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
-import API_BASE_URL from '../config/api';
+import {API_BASE_URL} from '../config/api';
 
 const API_URL = `${API_BASE_URL}`; // Replace with your actual API base URL
 

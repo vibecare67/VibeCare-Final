@@ -16,17 +16,26 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.malkan24.VibeCare1",
+      "jsEngine": "hermes",
+      "usesCleartextTraffic": true,
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      },
-      "package": "com.malkan24.VibeCare1"
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "assetBundlePatterns": [
+      "assets/fonts/*",
+      "assets/images/*",
+      "assets/icon/*"
+    ],
     "plugins": [
-      "expo-asset"
+      "expo-asset",
+      "./plugins/with-network-security-config"
     ],
     "extra": {
       "eas": {

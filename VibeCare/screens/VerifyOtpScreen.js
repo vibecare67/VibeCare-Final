@@ -1,46 +1,60 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
-  Modal,
+  Alert,
   StyleSheet,
-  Animated,
-  Email,
-} from 'react-native';
-import axios from 'axios';
-import SignupScreen from './SignupScreen';
-import {API_BASE_URL} from '../config/api';
+  Modal
+} from "react-native";
+import axios from "axios";
+import { API_BASE_URL } from '../config/api';
 
-const VerifyOtpScreen = ({ navigation, route }) => {
-  const { Email } = route.params;
-  const [otp, setOtp] = useState('');
-  const [isOtpFocused, setIsOtpFocused] = useState(false);
-  const [isModalVisible, setIsModalVisible] = useState(false); // Modal visibility state
-  const [modalMessage, setModalMessage] = useState(''); // Modal message state
-  const placeholderAnimation = useRef(new Animated.Value(0)).current;
-   const [customAlertVisible, setCustomAlertVisible] = useState(false);
-    const [alertTitle, setAlertTitle] = useState("");
-    const [alertMessage, setAlertMessage] = useState("");
+const EditProfileScreen = ({ route, navigation }) => {
+  const userId = route?.params?.userId;
 
-  const handleFocus = () => {
-    setIsOtpFocused(true);
-    Animated.timing(placeholderAnimation, {
-      toValue: 1,
-      duration: 200,
-      useNativeDriver: false,
-    }).start();
+  const [profile, setProfile] = useState({
+    Name: "",
+    Username: "",
+    Email: "",
+  });
+
+  const [originalEmail, setOriginalEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [customAlertVisible, setCustomAlertVisible] = useState(false);
+  const [alertTitle, setAlertTitle] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
+
+  useEffect(() => {
+    if (!userId) {
+      console.error("userId not found");
+      return;
+    }
+    axios
+      .get(`${API_BASE_URL}/user-profile?userId=${userId}`)
+      .then((response) => {
+        setProfile(response.data);
+        setOriginalEmail(response.data.Email); // Store original email for comparison
+      })
+      .catch((error) => console.error("Error fetching user data:", error));
+  }, [userId]);
+
+  const handleChange = (key, value) => {
+    setProfile((prevState) => ({ ...prevState, [key]: value }));
+    
+    // Validate email format when email changes
+    if (key === "Email") {
+      validateEmail(value);
+    }
   };
 
-  const handleBlur = () => {
-    setIsOtpFocused(false);
-    if (!otp) {
-      Animated.timing(placeholderAnimation, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: false,
-      }).start();
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setEmailError("Please enter a valid email address");
+    } else {
+      setEmailError("");
     }
   };
 
@@ -54,142 +68,100 @@ const VerifyOtpScreen = ({ navigation, route }) => {
     setCustomAlertVisible(false);
   };
 
-
-  const handleVerifyOtp = async () => {
-    if (!otp) {
-      setModalMessage('Please enter the OTP');
-      setIsModalVisible(true);
-      return;
-    }
-
-    const otpData = { Email, otp: otp }
-   
-  try {
-    console.log('📤 Sending OTP verification request...');
-    const response = await fetch(`${API_BASE_URL}/verifyOtp`, {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify({ 
-        Email: Email.trim(), 
-        otp: otp.trim() // Trim whitespace from OTP
-      })
-    });
-
-    const data = await response.json();
-    console.log('📥 OTP Response:', data);
-
-    if (!response.ok) {
-      throw new Error(data.message || 'OTP verification failed');
-    }
-
-    if (data.status === 'success') {
-      console.log('✅ OTP verified');
-      setModalMessage('OTP verified');
-      setIsModalVisible(true);
-      navigation.navigate('ResetPasswordScreen',{Email});
-      console.log(Email);
+  const handleSubmit = async () => {
+    // Check if email has changed
+    if (profile.Email !== originalEmail) {
+      // Validate email format
+      if (emailError || !profile.Email) {
+        showAlert("Alert", "Please provide a valid email address.");
+        return;
+      }
+      
+      // Send OTP to the new email
+      try {
+        await axios.post(`${API_BASE_URL}/send-email-otp`, {
+          Email: profile.Email,
+          userId: userId
+        });
+        showAlert("Success", "OTP sent to your new email address.");
+        setTimeout(() => {
+          setCustomAlertVisible(false);
+          // Navigate to OTP verification screen
+          navigation.navigate("VerifyEmailOtpScreen", { 
+            Email: profile.Email, 
+            userId: userId,
+            profileData: profile 
+          });
+        }, 1000);
+      } catch (error) {
+        console.error("Error sending OTP:", error);
+        showAlert("Error", "Failed to send OTP. Please try again.");
+      }
     } else {
-      showAlert('Invalid OTP', data.message || 'The OTP you entered is invalid or expired.');
+      // If email hasn't changed, update profile directly
+      try {
+        await axios.put(`${API_BASE_URL}/edit-profile`, {
+          userId,
+          ...profile,
+        });
+        showAlert("Success", "Profile updated successfully");
+      } catch (error) {
+        console.error("Error updating profile:", error);
+        showAlert("Error", "Failed to update profile");
+      }
     }
-  } catch (error) {
-    console.error('❌ Error in OTP verification:', error);
-    showAlert('Error', error.message || 'Something went wrong. Please try again later.');
-  }
-};
-
-  const placeholderPosition = placeholderAnimation.interpolate({
-    inputRange: [0, 1],
-    outputRange: [15, -10],
-  });
-
-  const placeholderFontSize = placeholderAnimation.interpolate({
-    inputRange: [0, 1],
-    outputRange: [16, 12],
-  });
+  };
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => navigation.goBack()}
-      >
-        <Text style={styles.backArrow}>←</Text>
+      <Text style={styles.title}>Edit Profile</Text>
+
+      <TextInput
+        style={styles.input}
+        placeholder="Name"
+        placeholderTextColor="#aaa"
+        value={profile.Name}
+        onChangeText={(text) => handleChange("Name", text)}
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Username"
+        placeholderTextColor="#aaa"
+        value={profile.Username}
+        onChangeText={(text) => handleChange("Username", text)}
+      />
+
+      <TextInput
+        style={[styles.input, emailError ? styles.inputError : null]}
+        placeholder="Email"
+        placeholderTextColor="#aaa"
+        value={profile.Email}
+        onChangeText={(text) => handleChange("Email", text)}
+        keyboardType="email-address"
+      />
+      {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
+
+      <TouchableOpacity style={styles.saveButton} onPress={handleSubmit}>
+        <Text style={styles.saveButtonText}>Save Changes</Text>
       </TouchableOpacity>
 
-      <Text style={styles.title}>
-        Vibe<Text style={styles.care}>Care</Text>
-      </Text>
-      <Text style={styles.subtitle}>Enter OTP</Text>
-
-      <View style={styles.inputContainer}>
-        <View style={styles.floatingInputContainer}>
-          {(isOtpFocused || otp) && (
-            <Animated.Text
-              style={[
-                styles.floatingLabel,
-                {
-                  top: placeholderPosition,
-                  fontSize: placeholderFontSize,
-                },
-              ]}
-            >
-              Enter OTP
-            </Animated.Text>
-          )}
-          <TextInput
-            style={styles.input}
-            value={otp}
-            onChangeText={setOtp}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-          />
-        </View>
-      </View>
-
-      <TouchableOpacity style={styles.button} onPress={handleVerifyOtp}>
-        <Text style={styles.buttonText}>Verify OTP</Text>
-      </TouchableOpacity>
-
-      {/* Custom Alert Modal */}
       <Modal
-        visible={isModalVisible}
+        visible={customAlertVisible}
         transparent
         animationType="fade"
-        onRequestClose={() => setIsModalVisible(false)}
+        onRequestClose={closeAlert}
       >
         <View style={styles.modalOverlay}>
           <View style={styles.alertBox}>
-            <Text style={styles.alertTitle}>Alert</Text>
-            <Text style={styles.alertMessage}>{modalMessage}</Text>
-            <TouchableOpacity
-              style={styles.alertButton}
-              onPress={() => setIsModalVisible(false)}
-            >
+            <Text style={styles.alertTitle}>{alertTitle}</Text>
+            <Text style={styles.alertMessage}>{alertMessage}</Text>
+            <TouchableOpacity style={styles.alertButton} onPress={closeAlert}>
               <Text style={styles.alertButtonText}>OK</Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
-       {/* Custom Alert */}
-            <Modal
-              visible={customAlertVisible}
-              transparent
-              animationType="fade"
-              onRequestClose={closeAlert}
-            >
-              <View style={styles.modalOverlay}>
-                <View style={styles.alertBox}>
-                  <Text style={styles.alertTitle}>{alertTitle}</Text>
-                  <Text style={styles.alertMessage}>{alertMessage}</Text>
-                  <TouchableOpacity style={styles.alertButton} onPress={closeAlert}>
-                    <Text style={styles.alertButtonText}>OK</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </Modal>
     </View>
   );
 };
@@ -197,112 +169,85 @@ const VerifyOtpScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FDE6E6',
+    backgroundColor: "#FDE6E6",
     paddingHorizontal: 20,
-    justifyContent: 'center',
-  },
-  backButton: {
-    position: 'absolute',
-    top: 50,
-    left: 20,
-  },
-  backArrow: {
-    fontSize: 24,
-    color: '#4A4A4A',
+    justifyContent: "center",
   },
   title: {
-    fontSize: 50,
-    color: '#5c1060',
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 10,
-  },
-  care: {
-    color: '#5c1060',
-  },
-  subtitle: {
-    fontSize: 20,
-    color: '#4A4A4A',
-    textAlign: 'center',
-    marginBottom: 30,
-  },
-  inputContainer: {
+    fontSize: 30,
+    color: "#5c1060",
+    fontWeight: "bold",
+    textAlign: "center",
     marginBottom: 20,
   },
-  floatingInputContainer: {
-    position: 'relative',
-    marginBottom: 15,
-  },
-  floatingLabel: {
-    position: 'absolute',
-    top: -10,
-    left: 15,
-    fontSize: 12,
-    color: '#8b3efa',
-    backgroundColor: '#FDE6E6',
-    paddingHorizontal: 5,
-    zIndex: 1,
-  },
   input: {
-    backgroundColor: '#d1b7f7',
+    backgroundColor: "#d1b7f7",
     borderRadius: 20,
     paddingVertical: 15,
     paddingHorizontal: 15,
     fontSize: 16,
-    color: '#4A4A4A',
+    color: "#4A4A4A",
     elevation: 3,
     borderWidth: 1,
-    borderColor: '#8b3efa',
+    borderColor: "#8b3efa",
+    marginBottom: 15,
   },
-  button: {
-    backgroundColor: '#8b3efa',
+  inputError: {
+    borderColor: "red",
+  },
+  errorText: {
+    color: "red",
+    marginBottom: 15,
+    marginLeft: 10,
+  },
+  saveButton: {
+    backgroundColor: "#8b3efa",
     borderRadius: 30,
     paddingVertical: 15,
-    alignItems: 'center',
+    alignItems: "center",
     elevation: 5,
+    marginTop: 10,
   },
-  buttonText: {
-    color: '#fff',
+  saveButtonText: {
+    color: "#fff",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
   },
   alertBox: {
-    width: '80%',
-    backgroundColor: '#fff',
-    // borderRadius: 20,
+    width: "80%",
+    backgroundColor: "#fff",
     padding: 20,
-    alignItems: 'center',
-    // backgroundColor: '#FDE6E6',
+    alignItems: "center",
   },
   alertTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 10,
-    color: '#333',
+    color: "#333",
   },
   alertMessage: {
     fontSize: 16,
-    color: '#555',
-    textAlign: 'center',
+    color: "#555",
+    textAlign: "center",
     marginBottom: 20,
   },
   alertButton: {
-    backgroundColor: '#8b3efa',
+    backgroundColor: "#8b3efa",
     borderRadius: 15,
     paddingVertical: 10,
     paddingHorizontal: 20,
   },
   alertButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });
 
-export default VerifyOtpScreen;
+export default EditProfileScreen;
