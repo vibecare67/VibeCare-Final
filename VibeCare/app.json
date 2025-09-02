@@ -18,7 +18,6 @@
     "android": {
       "package": "com.malkan24.VibeCare1",
       "jsEngine": "hermes",
-      "usesCleartextTraffic": true,
       "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
@@ -36,8 +35,6 @@
     "plugins": [
       "expo-asset",
       "./plugins/with-network-security-config"
-    ],
-   
-    "owner": "vibecare"
+    ]
   }
 }
