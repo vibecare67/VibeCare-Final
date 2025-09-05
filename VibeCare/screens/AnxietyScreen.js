@@ -186,7 +186,7 @@ const AnxietyScreen = ({ navigation, route }) => {
       };
 
       // Make prediction request
-      const response = await axios.post('http://192.168.18.65:5000/predict_anxiety', data);
+      const response = await axios.post('https://backend-vibecare-1.onrender.com/predict_anxiety', data);
       const output = parseInt(response.data.predicted_anxiety_level);
       const levelText = output === 0 ? 'Low Anxiety Level' : output === 1 ? 'Moderate Anxiety Level' : 'High Anxiety Level';
       

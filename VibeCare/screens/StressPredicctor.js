@@ -198,7 +198,7 @@ const StressPredictor = ({navigation,route}) => {
         payload[key] = parseFloat(value);
       }
 
-      const response = await fetch(`http://192.168.18.65:5000/predict_stress`, {
+      const response = await fetch(`https://backend-vibecare-1.onrender.com/predict_stress`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

@@ -86,7 +86,7 @@ const getStressLevelText = (score) => {
 const predictRecommendation = async (formData) => {
   try {
     // First get the ML model prediction from the API
-    const mlResponse = await axios.post('http://192.168.18.65:5000/predict_suggestion', {
+    const mlResponse = await axios.post('https://backend-vibecare-1.onrender.com/predict_suggestion', {
       depression_level: formData.depression_level,
       stress_level: formData.stress_level,
       anxiety_level: formData.anxiety_level,

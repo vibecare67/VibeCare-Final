@@ -319,7 +319,8 @@ setTimeout(async () => {
     const numericAnswers = answers.map((a) => parseInt(a));
     console.log("✅ Numeric answers:", numericAnswers);
 
-    const url = "http://192.168.18.65:5000/predict_depression";
+    // const url = "http://192.168.18.65:5000/predict_depression";
+    const url = "https://backend-vibecare-1.onrender.com/predict_depression";
     console.log("🌍 Sending request to:", url);
 
     const response = await fetch(url, {
